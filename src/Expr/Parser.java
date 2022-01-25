@@ -30,28 +30,26 @@ public class Parser {
     }
 
     /**
-     * Expr -> Term E1
+     * Expr -> Term Expr1
      * 
      * @return float
      */
     private float expresion() {
         float t = termino();
-        float s = e1(t);
-
-        return s;
+        return Expr1(t);
     }
 
     /**
-     * E1 -> expresion | λ
+     * Expr1 -> expresion | λ
      * 
      * @return float
      */
-    private final int[] CF_E1 = {
+    private final int[] CF_Expr1 = {
             Token.NUM, Token.IDFUNC, Token.MENOS, Token.MAS, Token.POR, Token.DIV,
     };
 
-    boolean CF_E1_contains(int token) {
-        for (int cf_token : CF_E1) {
+    boolean CF_Expr1_contains(int token) {
+        for (int cf_token : CF_Expr1) {
             if (cf_token == token) {
                 return true;
             }
@@ -59,33 +57,31 @@ public class Parser {
         return false;
     }
 
-    private float e1(float a) {
-        float s = a;
-        if (CF_E1_contains(analex.Preanalisis().getNom())) {
+    private float Expr1(float a) {
+        if (CF_Expr1_contains(analex.Preanalisis().getNom())) {
             float e = expresion();
-            s = s + e;
+            return a + e;
         }
 
-        return s;
+        return a;
     }
 
     /**
-     * termino -> factor T1
+     * termino -> factor term1
      * 
      * @return float
      */
     private float termino() {
         float a = factor();
-        float p = t1(a);
-        return p;
+        return term1(a);
     }
 
     /**
-     * T1 -> * termino | / termino | λ
+     * term1 -> * termino | / termino | λ
      * 
      * @return float
      */
-    private float t1(float a) {
+    private float term1(float a) {
         float b;
         switch (analex.Preanalisis().getNom()) {
             case Token.POR:
@@ -110,20 +106,20 @@ public class Parser {
      * @return
      */
 
-    private float getFunc(String funct, float x, float b) {
+    private float getFunc(String funct, float num, float base) {
         if (funct.equals("sen")) {
-            return (float) Math.sin(Math.PI / 180 * x);
+            return (float) Math.sin(Math.PI / 180 * num);
         }
 
         if (funct.equals("cos")) {
-            return (float) Math.cos(Math.PI / 180 * x);
+            return (float) Math.cos(Math.PI / 180 * num);
         }
 
         if (funct.equals("sqrt")) {
-            return (float) Math.sqrt(x);
+            return (float) Math.sqrt(num);
         }
 
-        return (float) (Math.log(x) / Math.log(b));
+        return (float) (Math.log(num) / Math.log(base));
     }
 
     private float factor() {
@@ -134,17 +130,21 @@ public class Parser {
                 match(Token.NUM);
                 break;
             case Token.IDFUNC:
-                String function = analex.lexema();
+                String func = analex.lexema();
+
                 match(Token.IDFUNC);
                 match(Token.PA);
-                float param1 = expresion();
-                if (function.equals("logb")) {
+
+                float p1 = expresion();
+
+                if (func.equals("logb")) {
                     match(Token.COMA);
-                    float param2 = expresion();
-                    f = getFunc(function, param1, param2);
+                    float p2 = expresion();
+                    f = getFunc(func, p1, p2);
                 } else {
-                    f = getFunc(function, param1, 0);
-                }   match(Token.PC);
+                    f = getFunc(func, p1, 0);
+                }
+                match(Token.PC);
                 break;
             case Token.MENOS:
                 match(Token.MENOS);
