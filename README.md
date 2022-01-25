@@ -1,31 +1,99 @@
-#SimpleJavaCalculator
+## Getting Started
 
-Originally this project was written using Eclipse, but I have migrated it to NetBeans.
-This calculator is simple with an easy code to help novices learn how to operate a calculator.
+Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
 
-If you use the executable file "calculator.jar" and that it does not run, you can type "java -jar /your_calculator_directory/calculator.jar" in your terminal.
+## Folder Structure
 
+The workspace contains two folders by default, where:
 
-![Example: Java Calculator](Screenshots/screenshot.png)
+-   `src`: the folder to maintain sources
+-   `lib`: the folder to maintain dependencies
 
-##AUTHOR
+Meanwhile, the compiled output files will be generated in the `bin` folder by default.
 
-###Base Application
+> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
 
-Pierre-Henry SORIA
+## Dependency Management
 
-###Modifications and Improvements
+The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
 
-Achintha Gunasekara
+<!--  -->
 
-http://www.achinthagunasekara.com
+```js
 
-##CONTACT
+    parser.evaluar("25 * sin(23.6+e)- logB(10, sen(pi))");
+    Expr -> Term E1
+        E1 -> Expr | λ
 
-Pierre-Henry SORIA: pierrehs@hotmail.com
+    Term -> Fact T1
+        T1 -> * Term | / Term | λ
 
-Achintha Gunasekara: contact@achinthagunasekara.com
+    Fact -> ID | NUM | IDFunc(Expr, Expr) | - Term | + Term
+```
 
-##LICENSE
+```java
+    float expresion() {
+        float t = termino()
+        float s = e1(t)
+        return s
+    }
 
-Apache License, Version 2.0 or later; See the license.txt file in the "NotePad" folder.
+    float e1(float a) {
+        float s = 0
+        if (analex.preanalisis().contains("id, num ,idfunc, - , +, *, /, λ")) {
+            s = a + expresion()
+        }
+
+        return s
+    }
+
+    void termino() {
+        float a = factor()
+        float p = t1(a)
+        return p
+    }
+
+    float t1(float a) {
+        float b
+        if (analex.preanalisis().contains("*")) {
+            match("*")
+            b = termino()
+        } else if (analex.preanalisis().contains("/")) {
+            match("/")
+            b = 1/termino()
+        } else {
+            b = 1
+            // nada
+        }
+
+        return a * b
+    }
+
+    float factor() {
+        float factor
+        if (analex.preanalisis().contains("ID")) {
+            factor = analex.preanalisis().getValor()
+            match("ID")
+        } else if (analex.preanalisis().contains("NUM")) {
+            factor = analex.preanalisis().getValor()
+            match("NUM")
+        } else if (analex.preanalisis().contains("IDFunc")) {
+            String func = analex.preanalisis().getValor()
+            match("IDFunc")
+            match("(")
+            float param1 = Expr()
+            match(",")
+            float param2 = Expr()
+            match(")")
+
+            factor = analex.preanalisis().getFunc(func ,param1, param2)
+        } else if (analex.preanalisis().contains("-")) {
+            match("-")
+            factor = -Term()
+        } else {
+            match("+")
+            factor = Term()
+        }
+        return factor
+    }
+```
